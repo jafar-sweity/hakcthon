@@ -2,10 +2,22 @@ import express from 'express'
 import fs from 'fs'
 import AWS from 'aws-sdk'
 import { log } from 'console';
+import imageRouter from './routes/image.js';
 
 
-import * as AWS from 'aws-sdk';
-import * as fs from 'fs';
+import multer from 'multer';
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+      callback(null, 'uploads/');
+    },
+    filename: (req, file, callback) => {
+      callback(null, Date.now() + '-' + file.originalname)
+    }
+  });
+  
+  const upload = multer({ storage });
 
 // Configure AWS SDK with your credentials and region
 AWS.config.update({
@@ -36,7 +48,7 @@ rekognition.detectLabels(params, (err, data) => {
     console.log('Labels detected:', JSON.stringify(data.Labels, null, 2));
   }
 });
-=======
+
 // const imagePath = 'path/to/your/image.jpg';
 // const imageBuffer = fs.readFileSync(imagePath);
 // const base64Encoded = imageBuffer.toString('base64');
@@ -45,6 +57,7 @@ rekognition.detectLabels(params, (err, data) => {
 // const rekognition = new AWS.Rekognition();
 const app = express();
 app.use(express.json());
+
 
 
 const PORT = 3000;
