@@ -3,6 +3,9 @@ import fs from 'fs'
 import AWS from 'aws-sdk'
 import { log } from 'console';
 import multer from 'multer'
+import { AWS_hackthon } from '../db/entities/AWS.js';
+import { celebrity } from '../db/entities/celebrity.js';
+import { Text_table } from '../db/entities/text.js';
 
 
 const router = express.Router();
@@ -19,7 +22,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.post('/image', upload.single('file'), (req, res) => {
+router.post('/image', upload.single('file'), async (req, res) => {
     if (!req.file) {
         res.status(500).send("Failed Upload File!");
         return;
@@ -29,7 +32,7 @@ router.post('/image', upload.single('file'), (req, res) => {
 
         console.log(req.file.filename);
         const rekognition = new AWS.Rekognition();
-
+        const filename = req.file.filename;
 
         const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
 
@@ -39,13 +42,19 @@ router.post('/image', upload.single('file'), (req, res) => {
             },
             MaxLabels: 2,
         };
-
-        rekognition.detectLabels(params, (err, data) => {
+        const newaws = new AWS_hackthon()
+        rekognition.detectLabels(params, async (err, data) => {
             if (err) {
                 console.error('Error:', err);
                 res.status(500).json({ error: 'An error occurred' });
             } else {
                 console.log('Labels detected:', JSON.stringify(data.Labels, null, 2));
+                const path = './ images /' + filename;
+                const result = JSON.stringify(data);
+                newaws.path = path;
+                newaws.result = result;
+                await newaws.save();
+
                 res.json(data);
             }
         });
@@ -59,8 +68,10 @@ router.post('/celebrity', upload.single('file'), async (req, res) => {
         res.status(500).send("Failed Upload File!");
         return;
     }
+    const newaws = new celebrity()
 
     try {
+        const filename = req.file.filename;
         const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
 
         const celebrityDetectionParams = {
@@ -70,7 +81,11 @@ router.post('/celebrity', upload.single('file'), async (req, res) => {
         };
 
         const celebrityDetectionResult = await rekognition.recognizeCelebrities(celebrityDetectionParams).promise();
-
+        const path = './ images /' + filename;
+        const result = JSON.stringify(celebrityDetectionResult);
+        newaws.path = path;
+        newaws.result = result;
+        await newaws.save();
         res.send(
             celebrityDetectionResult.CelebrityFaces,
         );
@@ -87,8 +102,11 @@ router.post('/text', upload.single('file'), async (req, res) => {
         res.status(500).send("Failed Upload File!");
         return;
     }
+    const newaws = new Text_table()
 
     try {
+        const filename = req.file.filename;
+
         const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
 
         const textDetectionParams = {
@@ -98,7 +116,11 @@ router.post('/text', upload.single('file'), async (req, res) => {
         };
 
         const textDetectionResult = await rekognition.detectText(textDetectionParams).promise();
-
+        const path = '/ images /' + filename;
+        const result = JSON.stringify(textDetectionResult);
+        newaws.path = path;
+        newaws.result = result;
+        await newaws.save();
         res.json({
             detectedText: textDetectionResult.TextDetections,
         });

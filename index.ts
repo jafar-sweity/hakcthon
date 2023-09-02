@@ -3,7 +3,7 @@ import fs from 'fs'
 import AWS from 'aws-sdk'
 import { log } from 'console';
 import imgROUTER from './routes/image.js'
-
+import DB from './db/datasource.js'
 // const imagePath = 'path/to/your/image.jpg';
 // const imageBuffer = fs.readFileSync(imagePath);
 // const base64Encoded = imageBuffer.toString('base64');
@@ -25,5 +25,6 @@ app.use(imgROUTER)
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log('hello');
+    DB.initialize();
 
 })
