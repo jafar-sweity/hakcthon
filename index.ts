@@ -1,4 +1,8 @@
 import express from 'express'
+import fs from 'fs'
+import AWS from 'aws-sdk'
+import { log } from 'console';
+
 
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs';
@@ -32,3 +36,20 @@ rekognition.detectLabels(params, (err, data) => {
     console.log('Labels detected:', JSON.stringify(data.Labels, null, 2));
   }
 });
+=======
+// const imagePath = 'path/to/your/image.jpg';
+// const imageBuffer = fs.readFileSync(imagePath);
+// const base64Encoded = imageBuffer.toString('base64');
+
+// const s3 = new AWS.S3();
+// const rekognition = new AWS.Rekognition();
+const app = express();
+app.use(express.json());
+
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log('hello');
+
+})
+
