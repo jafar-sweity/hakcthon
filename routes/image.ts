@@ -52,4 +52,59 @@ router.post('/image', upload.single('file'), (req, res) => {
     }
 });
 
+
+router.post('/celebrity', upload.single('file'), async (req, res) => {
+    const rekognition = new AWS.Rekognition();
+    if (!req.file) {
+        res.status(500).send("Failed Upload File!");
+        return;
+    }
+
+    try {
+        const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
+
+        const celebrityDetectionParams = {
+            Image: {
+                Bytes: imageBuffer,
+            },
+        };
+
+        const celebrityDetectionResult = await rekognition.recognizeCelebrities(celebrityDetectionParams).promise();
+
+        res.send(
+            celebrityDetectionResult.CelebrityFaces,
+        );
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('error An error occurred');
+    }
+});
+
+router.post('/text', upload.single('file'), async (req, res) => {
+    const rekognition = new AWS.Rekognition();
+
+    if (!req.file) {
+        res.status(500).send("Failed Upload File!");
+        return;
+    }
+
+    try {
+        const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
+
+        const textDetectionParams = {
+            Image: {
+                Bytes: imageBuffer,
+            },
+        };
+
+        const textDetectionResult = await rekognition.detectText(textDetectionParams).promise();
+
+        res.json({
+            detectedText: textDetectionResult.TextDetections,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+});
 export default router;
