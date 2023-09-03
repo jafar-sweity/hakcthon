@@ -35,15 +35,24 @@ router.post('/image', upload.single('file'), async (req, res) => {
         const filename = req.file.filename;
 
         const imageBuffer = fs.readFileSync('./images/' + req.file.filename);
+        const s3 = new AWS.S3();
 
-        const params = {
-            Image: {
-                Bytes: imageBuffer,
-            },
-            MaxLabels: 2,
-        };
+
+        const s3res = await s3.putObject({
+            Body: imageBuffer,
+            Bucket: 'noob-enitiy',
+            Key: filename
+        }).promise();
+
         const newaws = new AWS_hackthon()
-        rekognition.detectLabels(params, async (err, data) => {
+        rekognition.detectLabels({
+            Image: {
+                S3Object: {
+                    Bucket: 'noob-enitiy',
+                    Name: filename
+                }
+            }
+        }, async (err, data) => {
             if (err) {
                 console.error('Error:', err);
                 res.status(500).json({ error: 'An error occurred' });
@@ -54,8 +63,10 @@ router.post('/image', upload.single('file'), async (req, res) => {
                 newaws.path = path;
                 newaws.result = result;
                 await newaws.save();
+                const imageUrl = `/${filename}`;
 
-                res.json(data);
+                // res.json(data);
+                res.render('result', { imageUrl: imageUrl, result: result });
             }
         });
     }
