@@ -38,8 +38,8 @@ app.listen(PORT, () => {
 
 
 AWS.config.update({
-    accessKeyId: 'AKIA3SQWPZW4US4HEGLZ',
-    secretAccessKey: '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',
+    accessKeyId: '-',
+    secretAccessKey: '-',
     region: 'eu-west-2',
 });
 
