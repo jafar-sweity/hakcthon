@@ -5,11 +5,11 @@ import { celebrity } from "./entities/celebrity.js";
 
 const dataSource = new DataSource({
     type: 'mysql',
-    host: 'hackathon-jafar.ckxcq2pvrc9s.eu-west-2.rds.amazonaws.com',
+    host: '-',
     port: 3306,
-    username: 'admin',
-    password: '12345678',
-    database: 'hackathon',
+    username: '-',
+    password: '-',
+    database: '-',
     entities: [
         AWS_hackthon, Text_table, celebrity
     ],
