@@ -31,4 +31,5 @@ To get started with this project, follow these steps:
 3. Configure your AWS IAM key and other necessary credentials.
 4. Run the application: `node app.js`
 
+- https://royal-leaf-b1f.notion.site/Computer-Vision-Hackathon-bad1dd14d10b4e588cb5a56c9dd695cc
 
